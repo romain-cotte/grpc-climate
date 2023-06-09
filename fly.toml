@@ -1,0 +1,17 @@
+# fly.toml app configuration file generated for nginx-example on 2023-06-09T19:06:11+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "nginx-example"
+primary_region = "cdg"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 50051
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls"]
+    [services.ports.tls_options]
+      alpn = ["h2"]

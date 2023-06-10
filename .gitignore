@@ -1,7 +1,9 @@
 ### C++ ###
 
+external-Linux
 
 build
+venv
 
 # Prerequisites
 *.d

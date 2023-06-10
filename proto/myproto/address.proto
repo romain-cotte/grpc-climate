@@ -9,4 +9,3 @@ message Address {
     string city     = 4;
     string country  = 5;
 }
-

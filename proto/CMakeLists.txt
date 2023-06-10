@@ -8,6 +8,7 @@ find_package(Threads)
 set(PROTO_FILES
     myproto/address.proto
     myproto/addressbook.proto
+    myproto/tmax.proto
 )
 
 #

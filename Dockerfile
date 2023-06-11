@@ -42,10 +42,15 @@ WORKDIR /home/grpc-cpp
 COPY CMakeLists.txt .
 COPY proto proto
 COPY server server
+COPY cmake cmake
+
+RUN apt install -y libnetcdf-dev
 
 RUN mkdir build
 WORKDIR /home/grpc-cpp/build
 RUN cmake ..
 RUN make
 
-ENTRYPOINT ["./server/server"]
+WORKDIR /home/grpc-cpp
+
+ENTRYPOINT ["./build/server/server"]

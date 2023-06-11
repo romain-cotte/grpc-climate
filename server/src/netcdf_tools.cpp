@@ -1,4 +1,5 @@
 #include <netcdf>
+#include "netcdf_tools.h"
 
 using namespace netCDF::exceptions;
 using namespace netCDF;
@@ -64,7 +65,7 @@ void display_variables(const NcGroup &nc_group, int depth = 0) {
   }
 }
 
-void display_header_group(NcGroup nc_group, int depth = 0) {
+void display_header_group(NcGroup nc_group, int depth) {
   // cout << "name       : " << nc_group.getName(true) << endl;
   // cout << "is null    : " << nc_group.isNull() << endl;
   // cout << "id         : " << nc_group.getId() << endl;
@@ -86,3 +87,113 @@ void display_header_group(NcGroup nc_group, int depth = 0) {
   cout << prefix << "}" << endl;
 }
 
+
+NetcdfProjection::NetcdfProjection() {}
+NetcdfProjection::NetcdfProjection(std::string file_path) {
+  open(file_path);
+}
+
+void NetcdfProjection::open(std::string file_path) {
+  nc_file.open(file_path, NcFile::read);
+
+  NcDim lat_dim  = nc_file.getDim("latitude");
+  NcDim lon_dim  = nc_file.getDim("longitude");
+  NcDim date_dim = nc_file.getDim("date");
+
+  if (lat_dim.isNull() || lon_dim.isNull() || date_dim.isNull()) {
+    return;
+  }
+
+  n_latitudes        = lat_dim.getSize();
+  n_longitudes       = lon_dim.getSize();
+  n_days_since_start = date_dim.getSize();
+
+  n_all              = (uint)n_days_since_start * n_latitudes * n_longitudes;
+
+  cout << n_longitudes << " " << n_longitudes << endl;
+  cout << "days_since_start: " <<  n_days_since_start << endl;
+
+  days_since_start = new int[n_days_since_start];
+  latitudes        = new float[n_latitudes];
+  longitudes       = new float[n_longitudes];
+
+
+  NcVar date_var = nc_file.getVar("date");
+  NcVar lat_var  = nc_file.getVar("latitude");
+  NcVar lon_var  = nc_file.getVar("longitude");
+
+  if (date_var.isNull() || lat_var.isNull() || lon_var.isNull()) {
+    printf("Var is null");
+    return;
+  }
+
+  // cout << "size" << lat_var.getSize() << endl;
+
+  date_var.getVar(days_since_start);
+  lat_var.getVar(latitudes);
+  lon_var.getVar(longitudes);
+
+  start_latitude  = latitudes[0];
+  start_longitude = longitudes[0];
+
+  cout << "start_latitude:" << start_latitude << endl;
+  cout << "start_longitude:" << start_longitude << endl;
+
+  // for (int i = 0; i < n_days_since_start; ++i) {
+  //   cout << ":" << days_since_start[i] << endl;
+  // }
+
+  data = new float[n_all];
+
+  NcVar tasmax_var = nc_file.getVar("tasmax");
+
+  if (tasmax_var.isNull()) {
+    printf("Error");
+    return;
+  }
+
+  tasmax_var.getVar(data);
+  // for (int i = 0; i < n_all; ++i) {
+  //   cout << data[i] << " ";
+  // }
+  // cout << endl;
+}
+
+
+NetcdfProjection::~NetcdfProjection() {
+  delete[] days_since_start;
+  delete[] latitudes;
+  delete[] longitudes;
+  delete[] data;
+}
+
+
+float NetcdfProjection::get_projection(int days_since_start,
+                                      float latitude,
+                                      float longitude) {
+
+  if (latitude < start_latitude) {
+    throw std::invalid_argument("latitude < start_latitude");
+  }
+  if (longitude < start_longitude) {
+    throw std::invalid_argument("longitude < start_longitude");
+  }
+
+  float d_lat = latitude - start_latitude;
+  float d_lon = longitude - start_longitude;
+
+  int ilat = d_lat / 0.25;
+  int ilon = d_lon / 0.25;
+
+
+  int i = days_since_start * (n_latitudes * n_longitudes) +
+          ilat * n_longitudes +
+          ilon;
+
+  cout << "ilat: " << ilat << endl;
+  cout << "ilon: " << ilon << endl;
+
+  cout << "i: " << i << endl;
+
+  return data[i];
+}

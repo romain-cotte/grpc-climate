@@ -136,6 +136,10 @@ void NetcdfProjection::open(std::string file_path) {
   start_latitude  = latitudes[0];
   start_longitude = longitudes[0];
 
+  end_latitude = latitudes[n_latitudes-1]+0.25;
+  end_longitude = longitudes[n_longitudes-1]+0.25;
+
+
   cout << "start_latitude:" << start_latitude << endl;
   cout << "start_longitude:" << start_longitude << endl;
 

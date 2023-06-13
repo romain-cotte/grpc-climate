@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <style>
+    textarea { white-space: nowrap; }
+    </style>
+    <title>
+      GRPC climate
+    </title>
+  </head>
+  <body>
+    <h1>GRPC climate</h1>
+    <pre>
+This is just a demonstrating project. It yields the temperatures by day from
+2015-01-01 to 2045-12-31 for longitudes x and latitudes y such that 40 <= y < 50
+and 0 <= x < 10.
+
+To get day 2015-01-01, set days_since_start = 0
+       day 2015-01-02, set days_since_start = 1
+
+
+It uses the gRPC technology on a free server.
+
+To make a request, use the following proto, save it into file tmax.proto:
+
+syntax = "proto3";
+
+package netcdf;
+
+message DateLocation {
+  uint32 days_since_start = 1;
+  float latitude = 2;
+  float longitude = 3;
+}
+
+message Temperature {
+  float value = 1;
+}
+
+service Tmax {
+  rpc GetValue(DateLocation) returns (Temperature) {}
+}
+
+
+Then, either create a custom gRPC client or use directly grpcurl:
+
+
+$ grpcurl -d '{"days_since_start": 0, "latitude": 40.45, "longitude": 8.7}' \
+  -proto tmax.proto \
+  grpc-climate.fly.dev:443 \
+  netcdf.Tmax/GetValue
+
+{
+  "value": 15.070013
+}
+    </pre>
+  </body>
+</html>

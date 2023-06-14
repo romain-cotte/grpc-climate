@@ -1,0 +1,24 @@
+---
+variables:
+  APP: grpc-python
+  IMAGE_NAME: test-python-app
+  PYTHON: $PWD/venv/bin/python
+
+logs:
+  script:
+    - flyctl logs -a $APP
+
+build:
+  script:
+    >
+      pack build $IMAGE_NAME
+      --builder paketobuildpacks/builder:base
+      --buildpack gcr.io/paketo-buildpacks/python
+
+# test-server:
+#   script:
+#     - grpcurl -d '{"message": "test"}' grpc-python.fly.dev:443 unary.Unary/GetServerResponse
+
+ssh:
+  script:
+    flyctl ssh console -a grpc-python

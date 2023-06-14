@@ -1,0 +1,4 @@
+grpcio-reflection==1.54.2
+grpcio-tools==1.54.2
+grpcio==1.54.2
+gunicorn==20.1.0

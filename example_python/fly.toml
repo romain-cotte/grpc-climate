@@ -1,0 +1,24 @@
+# fly.toml app configuration file generated for grpc-python on 2023-06-09T14:26:51+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "grpc-python"
+primary_region = "cdg"
+
+[build]
+  builder = "paketobuildpacks/builder:base"
+  buildpacks = ["gcr.io/paketo-buildpacks/python"]
+
+[env]
+  PORT = "8080"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls"]
+    [services.ports.tls_options]
+      alpn = ["h2"]

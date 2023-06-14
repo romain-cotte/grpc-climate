@@ -1,12 +1,11 @@
 ---
 variables:
-  IMAGE_NAME: grpc-cpp
-  PYTHON: /home/romain/perso/fly/grpc-cpp/venv/bin/python
+  IMAGE_NAME: grpc-climate
+  PYTHON: /home/romain/perso/fly/grpc-climate/venv/bin/python
 
 logs:
   script:
     - fly logs
-
 
 build:
   script:

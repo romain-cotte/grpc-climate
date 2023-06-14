@@ -8,6 +8,7 @@ RUN apt install -y \
   curl \
   g++ \
   git \
+  libnetcdf-dev \
   libtool \
   pkg-config \
   vim
@@ -43,8 +44,6 @@ COPY CMakeLists.txt .
 COPY proto proto
 COPY server server
 COPY cmake cmake
-
-RUN apt install -y libnetcdf-dev
 
 RUN mkdir build
 WORKDIR /home/grpc-cpp/build

@@ -15,6 +15,10 @@ shell:
   script:
     - docker run -it --rm $IMAGE_NAME
 
+docker-run:
+  script:
+    docker run --name $IMAGE_NAME --rm -d -p 50051:50051 $IMAGE_NAME
+
 deploy:
   script:
     - fly deploy
@@ -55,6 +59,14 @@ to:
       grpc-climate.fly.dev:443
       netcdf.Tmax/GetValue
 
+tmsi:
+  cwd: ./proto
+  script:
+    >
+      grpcurl -d '{"days_since_start": 0, "latitude": 40.45, "longitude": 8.7}'
+      -proto myproto/tmax.proto
+      -plaintext 192.168.1.236:50051
+      netcdf.Tmax/GetValue
 
 generate_python_proto:
   script:

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.15)
 project(example-grpc LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -15,18 +15,14 @@ endif()
 include(cmake/netcdf.cmake)
 find_package(CURL REQUIRED)
 
-
-
 link_directories(${DEP_ROOT_DIR}/install/lib/libnetcdf-cxx4.so)
 include_directories(${DEP_ROOT_DIR}/${NETCDF_NAME}/cxx4)
 
-
 link_directories(${DEP_ROOT_DIR}/install/lib)
 
-
-# add_executable(netcdf_reader src/main.cpp)
-# target_link_libraries(netcdf_reader netcdf-cxx4)
-
+enable_testing()
 
 add_subdirectory(server)
 add_subdirectory(proto)
+
+

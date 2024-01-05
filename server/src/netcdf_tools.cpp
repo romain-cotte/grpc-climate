@@ -171,24 +171,27 @@ NetcdfProjection::~NetcdfProjection() {
   delete[] data;
 }
 
-
-float NetcdfProjection::get_projection(int days_since_start,
-                                      float latitude,
-                                      float longitude) {
-
+inline void NetcdfProjection::validate_coordinates(float latitude, float longitude) {
   if (latitude < start_latitude) {
     throw std::invalid_argument("latitude < start_latitude");
   }
   if (longitude < start_longitude) {
     throw std::invalid_argument("longitude < start_longitude");
   }
+}
+
+
+float NetcdfProjection::get_projection(int days_since_start,
+                                      float latitude,
+                                      float longitude) {
+
+  NetcdfProjection::validate_coordinates(latitude, longitude);
 
   float d_lat = latitude - start_latitude;
   float d_lon = longitude - start_longitude;
 
   int ilat = d_lat / 0.25;
   int ilon = d_lon / 0.25;
-
 
   int i = days_since_start * (n_latitudes * n_longitudes) +
           ilat * n_longitudes +
@@ -200,4 +203,29 @@ float NetcdfProjection::get_projection(int days_since_start,
   cout << "i: " << i << endl;
 
   return data[i];
+}
+
+
+vector<float> NetcdfProjection::get_serie(
+  float latitude,
+  float longitude
+) {
+  NetcdfProjection::validate_coordinates(latitude, longitude);
+
+  float d_lat = latitude - start_latitude;
+  float d_lon = longitude - start_longitude;
+
+  int ilat = d_lat / 0.25;
+  int ilon = d_lon / 0.25;
+
+  vector<float> serie;
+
+  for (int days_since_start = 0; days_since_start < n_days_since_start; ++days_since_start) {
+    int i = days_since_start * (n_latitudes * n_longitudes) +
+        ilat * n_longitudes +
+        ilon;
+    serie.push_back(data[i]);
+  }
+
+  return serie;
 }

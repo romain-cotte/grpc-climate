@@ -2,6 +2,7 @@
 // #define NETCDF_TOOLS_H
 
 #include <netcdf>
+#include <vector>
 
 void display_header_group(netCDF::NcGroup nc_group, int depth = 0);
 
@@ -29,7 +30,9 @@ public:
   void open(std::string file_path);
 
 
+  void validate_coordinates(float latitude, float longitude);
   float get_projection(int days_since_start, float latitude, float longitude);
+  std::vector<float> get_serie(float latitude, float longitude);
 };
 
 // #endif /* NETCDF_TOOLS_H */

@@ -3,15 +3,25 @@ variables:
   IMAGE_NAME: grpc-climate
   PYTHON: /home/romain/perso/fly/grpc-climate/venv/bin/python
 
+build:
+  cwd: ./build
+  script:
+    - make
+
+test:
+  cwd: ./build/server
+  script:
+    - ./test_netcdf_tools
+
 logs:
   script:
     - fly logs
 
-build:
+docker-build:
   script:
     - docker build . --tag $IMAGE_NAME
 
-shell:
+docker-shell:
   script:
     - docker run -it --rm $IMAGE_NAME
 

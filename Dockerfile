@@ -1,7 +1,9 @@
 FROM ubuntu:22.04
 
-RUN apt update
-RUN apt install -y \
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
+RUN apt-get install -y \
   autoconf \
   build-essential \
   cmake \

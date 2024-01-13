@@ -34,10 +34,10 @@ int main(int argc, char* argv[]) {
 
   ARE_EQUAL((int)serie.size(), 10950);
 
-  for (float x: serie) {
-    cout << x << " ";
-  }
-  cout << endl;
+  // for (float x: serie) {
+  //   cout << x << " ";
+  // }
+  // cout << endl;
 
   return 0;
 }

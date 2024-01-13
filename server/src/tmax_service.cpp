@@ -1,13 +1,14 @@
 #include "tmax_service.h"
 
+
 TmaxService::TmaxService(const std::string &file_path) {
   netcdf_proj.open(file_path);
 }
 
 
-::grpc::Status TmaxService::GetValue(::grpc::ServerContext* context,
-                                const ::netcdf::DateLocation* request,
-                                ::netcdf::Temperature* response) {
+Status TmaxService::GetValue(ServerContext* context,
+                             const DateLocation* request,
+                             Temperature* response) {
 
 
   int days_since_start = request->days_since_start();
@@ -16,16 +17,16 @@ TmaxService::TmaxService(const std::string &file_path) {
 
 
   if (days_since_start < 0 || netcdf_proj.n_days_since_start < days_since_start) {
-    return grpc::Status(
-      grpc::StatusCode::INVALID_ARGUMENT,
+    return Status(
+      StatusCode::INVALID_ARGUMENT,
       "days_since_start not between 0 and " + to_string(netcdf_proj.n_days_since_start)
     );
   }
 
   if (latitude < netcdf_proj.start_latitude ||
       netcdf_proj.end_latitude <= latitude) {
-    return grpc::Status(
-      grpc::StatusCode::INVALID_ARGUMENT,
+    return Status(
+      StatusCode::INVALID_ARGUMENT,
       "latitude y not such that " + to_string(netcdf_proj.start_latitude) +
       " <= y < " + to_string(netcdf_proj.end_latitude)
     );
@@ -33,8 +34,8 @@ TmaxService::TmaxService(const std::string &file_path) {
 
   if (longitude < netcdf_proj.start_longitude ||
       netcdf_proj.end_longitude <= longitude) {
-    return grpc::Status(
-      grpc::StatusCode::INVALID_ARGUMENT,
+    return Status(
+      StatusCode::INVALID_ARGUMENT,
       "longitude x not such that " + to_string(netcdf_proj.start_longitude) +
       " <= x < " + to_string(netcdf_proj.end_longitude)
     );
@@ -54,5 +55,28 @@ TmaxService::TmaxService(const std::string &file_path) {
   response->set_value(result);
 
   cout << "Value           : " << response->value() << endl;
-  return grpc::Status::OK;
+  return Status::OK;
 }
+
+
+Status TmaxService::GetTemperatures(ServerContext* context,
+                                    const Location* request,
+                                    ServerWriter<Temperature>* writer) {
+
+  float latitude = request->latitude();
+  float longitude = request->longitude();
+
+  vector<float> temperatures = netcdf_proj.get_serie(
+    latitude,
+    longitude
+  );
+
+  for (float temp: temperatures) {
+    Temperature t; t.set_value(temp);
+    writer->Write(t);
+  }
+  cout << "GetSerie done" << endl;
+
+  return Status::OK;
+}
+

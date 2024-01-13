@@ -8,9 +8,10 @@
 using namespace std;
 using namespace netCDF;
 using namespace netCDF::exceptions;
+using namespace grpc;
+using namespace climate;
 
-
-class TmaxService final: public netcdf::Tmax::Service {
+class TmaxService final: public Tmax::Service {
 
 private:
   NetcdfProjection netcdf_proj;
@@ -18,8 +19,12 @@ private:
 public:
   TmaxService(const string &file_path);
 
-  virtual ::grpc::Status GetValue(::grpc::ServerContext* context,
-                                  const ::netcdf::DateLocation* request,
-                                  ::netcdf::Temperature* response);
+  virtual Status GetValue(ServerContext* context,
+                          const DateLocation* request,
+                          Temperature* response);
+
+  virtual Status GetTemperatures(ServerContext* context,
+                                 const Location* request,
+                                 ServerWriter<Temperature>* writer);
 
 };

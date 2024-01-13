@@ -222,8 +222,8 @@ vector<float> NetcdfProjection::get_serie(
 
   for (int days_since_start = 0; days_since_start < n_days_since_start; ++days_since_start) {
     int i = days_since_start * (n_latitudes * n_longitudes) +
-        ilat * n_longitudes +
-        ilon;
+            ilat * n_longitudes +
+            ilon;
     serie.push_back(data[i]);
   }
 

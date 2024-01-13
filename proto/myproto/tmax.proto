@@ -1,11 +1,16 @@
 syntax = "proto3";
 
-package netcdf;
+package climate;
 
 message DateLocation {
   uint32 days_since_start = 1;
   float latitude = 2;
   float longitude = 3;
+}
+
+message Location {
+  float latitude = 1;
+  float longitude = 2;
 }
 
 message Temperature {
@@ -14,4 +19,5 @@ message Temperature {
 
 service Tmax {
   rpc GetValue(DateLocation) returns (Temperature) {}
+  rpc GetTemperatures(Location) returns (stream Temperature) {}
 }

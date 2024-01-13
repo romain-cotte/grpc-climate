@@ -1,12 +1,32 @@
 ---
 variables:
   IMAGE_NAME: grpc-climate
-  PYTHON: /home/romain/perso/fly/grpc-climate/venv/bin/python
+  PYTHON: $PWD/venv/bin/python
 
 build:
   cwd: ./build
   script:
     - make
+
+build-client:
+  script:
+    >
+      $PYTHON -m grpc_tools.protoc
+      -Iproto/myproto
+      --python_out=python_client
+      --pyi_out=python_client
+      --grpc_python_out=python_client
+      proto/myproto/tmax.proto
+
+run-client:
+  script:
+    >
+      $PYTHON python_client/client.py
+
+
+run:
+  script:
+    - ./build/server/server
 
 test:
   cwd: ./build/server
@@ -58,7 +78,18 @@ t:
       grpcurl -d '{"days_since_start": 0, "latitude": 40.0, "longitude": 9.9}'
       -proto myproto/tmax.proto
       -plaintext localhost:50051
-      netcdf.Tmax/GetValue
+      climate.Tmax/GetValue
+
+
+s:
+  cwd: ./proto
+  script:
+    >
+      grpcurl -d '{"latitude": 40.0, "longitude": 9.9}'
+      -proto myproto/tmax.proto
+      -plaintext localhost:50051
+      climate.Tmax/GetTemperatures
+
 
 to:
   cwd: ./proto
@@ -67,7 +98,8 @@ to:
       grpcurl -d '{"days_since_start": 0, "latitude": 40.45, "longitude": 8.7}'
       -proto myproto/tmax.proto
       grpc-climate.fly.dev:443
-      netcdf.Tmax/GetValue
+      climate.Tmax/GetTemperatures
+
 
 tmsi:
   cwd: ./proto
@@ -76,7 +108,7 @@ tmsi:
       grpcurl -d '{"days_since_start": 0, "latitude": 40.45, "longitude": 8.7}'
       -proto myproto/tmax.proto
       -plaintext 192.168.1.236:50051
-      netcdf.Tmax/GetValue
+      climate.Tmax/GetValue
 
 generate_python_proto:
   script:

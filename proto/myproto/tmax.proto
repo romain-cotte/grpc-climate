@@ -17,7 +17,15 @@ message Temperature {
   float value = 1;
 }
 
+message Statistics {
+  float max = 1;
+  float min = 2;
+  float mean = 3;
+}
+
+
 service Tmax {
   rpc GetValue(DateLocation) returns (Temperature) {}
   rpc GetTemperatures(Location) returns (stream Temperature) {}
+  rpc GetStatistics(Location) returns (Statistics) {}
 }

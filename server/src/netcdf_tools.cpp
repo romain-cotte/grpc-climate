@@ -171,7 +171,10 @@ NetcdfProjection::~NetcdfProjection() {
   delete[] data;
 }
 
-inline void NetcdfProjection::validate_coordinates(float latitude, float longitude) {
+inline void NetcdfProjection::validate_coordinates(
+  float latitude,
+  float longitude
+) const {
   if (latitude < start_latitude) {
     throw std::invalid_argument("latitude < start_latitude");
   }
@@ -183,7 +186,7 @@ inline void NetcdfProjection::validate_coordinates(float latitude, float longitu
 
 float NetcdfProjection::get_projection(int days_since_start,
                                       float latitude,
-                                      float longitude) {
+                                      float longitude) const {
 
   NetcdfProjection::validate_coordinates(latitude, longitude);
 
@@ -209,7 +212,7 @@ float NetcdfProjection::get_projection(int days_since_start,
 vector<float> NetcdfProjection::get_serie(
   float latitude,
   float longitude
-) {
+) const {
   NetcdfProjection::validate_coordinates(latitude, longitude);
 
   float d_lat = latitude - start_latitude;
@@ -229,3 +232,28 @@ vector<float> NetcdfProjection::get_serie(
 
   return serie;
 }
+
+
+Statistics NetcdfProjection::get_statistics(
+  float latitude,
+  float longitude
+) const {
+  vector<float> temperatures = get_serie(latitude, longitude);
+
+  Statistics stats{-1000, 1000, 0};
+
+  float total = 0;
+
+  for (float temperature: temperatures) {
+    if (temperature < stats.min) {
+      stats.min = temperature;
+    }
+    if (stats.max < temperature) {
+      stats.max = temperature;
+    }
+    total += temperature;
+  }
+  stats.mean = total / temperatures.size();
+  return stats;
+}
+

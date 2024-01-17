@@ -23,7 +23,6 @@ run-client:
     >
       $PYTHON python_client/client.py
 
-
 run:
   script:
     - ./build/server/server
@@ -61,6 +60,9 @@ h:
   script:
     - ncdump -h server/data/era5_Tmax_40.0_0.0_projection_2030.nc
 
+notebook:
+  script:
+    - $PYTHON -m jupyter notebook
 
 address:
   cwd: ./proto
@@ -80,7 +82,6 @@ t:
       -plaintext localhost:50051
       climate.Tmax/GetValue
 
-
 s:
   cwd: ./proto
   script:
@@ -90,7 +91,6 @@ s:
       -plaintext localhost:50051
       climate.Tmax/GetTemperatures
 
-
 to:
   cwd: ./proto
   script:
@@ -99,7 +99,6 @@ to:
       -proto myproto/tmax.proto
       grpc-climate.fly.dev:443
       climate.Tmax/GetTemperatures
-
 
 tmsi:
   cwd: ./proto
@@ -118,4 +117,3 @@ generate_python_proto:
       --python_out=.
       --grpc_python_out=.
       ./proto/myproto/tmax.proto
-
